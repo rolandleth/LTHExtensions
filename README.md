@@ -1,3 +1,5 @@
+Not really maintained, but I do update it occasionally.
+
 ## String
 
 ```swift
