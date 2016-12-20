@@ -9,36 +9,27 @@
 import UIKit
 import Foundation
 
-infix operator  |> { associativity left }
-infix operator  ||| {}
-infix operator  ||= {}
-
-func * (left: Character, right: Int) -> String {
-	var newString = ""
-	right.times {
-		newString += String(left)
-	}
-	return newString
-}
+precedencegroup Left { associativity: left }
+infix operator  |>: Left
+infix operator ??=
+infix operator =??
 
 // Thanks to https://gist.github.com/kristopherjohnson/ed97acf0bbe0013df8af
-func |> <T,U>(lhs : T, rhs : T -> U) -> U {
-	return rhs(lhs);
+/// Applies the right hand closure to the left hand operator.
+func |><T,U>(lhs : T, rhs : (T) -> U) -> U {
+	return rhs(lhs)
 }
 
-func |||<T> (left: T?, right: T) -> T  {
-	if let l = left { return l }
-	return right
+/// Assigns the right hand operator's value to the left hand operator, if the former is not nil.
+func =??<T>(lhs: inout T, rhs: @autoclosure () -> T?) {
+	guard let rhs = rhs() else { return }
+	
+	lhs = rhs
 }
 
-func |||<T,V> (left: T?, right: V) -> Any  {
-	if let l = left { return l }
-	return right
-}
-
-// Thanks to http://airspeedvelocity.net/2014/06/10/implementing-rubys-operator-in-swift/
-func ||= <T>(inout lhs: T?, @autoclosure rhs:  () -> T) {
-	if lhs == nil {
-		lhs = rhs()
-	}
+/// Assigns the right hand operator's value to the left hand operator, if the latter is nil.
+func ??=<T>(lhs: inout T?, rhs: @autoclosure () -> T?) {
+	guard lhs == nil else { return }
+	
+	lhs = rhs()
 }

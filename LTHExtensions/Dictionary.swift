@@ -8,14 +8,14 @@
 
 
 extension Dictionary {
-	func each(f: (Key, Value) -> ()) {
-		for (k, v) in self {
-			f(k, v)
-		}
+	/// Shorthand for `forEach`.
+	func each(_ f: (Key, Value) -> ()) {
+		forEach { f($0, $1) }
 	}
 }
 
-func + <K, V>(left: [K:V], right: [K:V]) -> [K:V] {
+/// Iterates through all of right hand operator's keys and values, adds (*overwrites*) them to the left hand operator, and returns a new dictionary.
+func +<K, V>(left: [K:V], right: [K:V]) -> [K:V] {
 	var l = left
 	
 	for (k, v) in right {
@@ -25,10 +25,12 @@ func + <K, V>(left: [K:V], right: [K:V]) -> [K:V] {
 	return l
 }
 
-func += <K, V>(inout left: [K:V], right: [K:V]) {
+/// Iterates through all of right hand operator's keys and values, and adds (*overwrites*) them to the left hand operator.
+func +=<K, V>(left: inout [K:V], right: [K:V]) {
 	left = left + right
 }
 
-func << <K, V>(inout left: [K:V], right: [K:V]) {
+/// Iterates through all of right hand operator's keys and values, and adds (*overwrites*) them to the left hand operator.
+func <<<K, V>(left: inout [K:V], right: [K:V]) {
 	left += right
 }

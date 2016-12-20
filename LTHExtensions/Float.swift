@@ -8,10 +8,14 @@
 
 import Foundation
 
+fileprivate let delta: Double = 0.0174532925199432958
+
 extension Float {
-	var degreesToRadians: Float { return self * 0.0174532925199432958 }
+	/// A `Float` value which represents the number of radians converted from the number of degrees.
+	var degreesToRadians: Float { return self * Float(delta) }
 }
 
 extension Double {
-	var degreesToRadians: Double { return Double(Float(self).degreesToRadians) }
+	/// A `Double` value which represents the number of radians converted from the number of degrees.
+	var degreesToRadians: Double { return self * delta }
 }

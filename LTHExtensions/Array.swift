@@ -7,24 +7,28 @@
 //
 
 extension Array {
-	func each(f: (Element) -> ()) {
+	/// Shorthand for `forEach`.
+	func each(_ f: (Element) -> Void) {
 		for e in self {
 			f(e)
 		}
 	}
 }
 
-func + <T>(left: [T], right: T) -> [T] {
+/// Returns an array with the left hand operand's elements, plus the right hand operand.
+func +<T>(left: [T], right: T) -> [T] {
 	var l = left
 	l << right
 	
 	return l
 }
 
-func << <T>(inout left: [T], right: T) {
+/// Appends the right hand opperand to the left hand operand array.
+func <<<T>(left: inout [T], right: T) {
 	left.append(right)
 }
 
-func << <T>(inout left: [T], right: [T]) {
+/// Appends the right hand opperand's elements to the left hand operand array.
+func <<<T>(left: inout [T], right: [T]) {
 	left += right
 }

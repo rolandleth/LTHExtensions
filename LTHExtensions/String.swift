@@ -13,88 +13,93 @@ extension String {
 	var length: Int {
 		var i = 0
 		for _ in self.characters {
-			i++
+			i += 1
 		}
 		return i
 	}
 	
-	var boolValue: Bool { return NSString(string: self).boolValue }
-	var intValue: Int { return NSString(string: self).integerValue }
-	var floatValue: Float { return NSString(string: self).floatValue }
-	var doubleValue: Double { return NSString(string: self).doubleValue 	}
-	var isFloat: Bool { return NSNumberFormatter().numberFromString(self) != nil && !isEmpty }
-	
-	var isInt: Bool {
-		let digits = NSCharacterSet.decimalDigitCharacterSet()
-		return digits.isSupersetOfSet(NSCharacterSet(charactersInString: self)) && !isEmpty
+	/// These below mimic their NSString.xValue counterparts.
+	var bool: Bool {
+		if let b = Bool(self) {
+			return b
+		}
+		else if let f = Float(self) {
+			return Int(f) != 0
+		}
+		return false
+	}
+	/// The `Int` value of the string, if it can be converted, or `0` otherwise.
+	var int: Int { return Int(self) ?? 0 }
+	/// The `Float` value of the string, if it can be converted, or `0` otherwise.
+	var float: Float { return Float(self) ?? 0 }
+	/// The `Double` value of the string, if it can be converted, or `0` otherwise.
+	var double: Double { return Double(self) ?? 0 }
+	/// A `Boolean` flag which indicates if the string is a valid `Float`. `123` and `123.0` would be both `true`.
+	var isFloat: Bool { return NumberFormatter().number(from: self) != nil && !isEmpty }
+	/// A `Boolean` flag which indicates if the string is a valid `Int`. `123` would be `true`, while `123.0` would be `false`.
+	var isInteger: Bool {
+		let digits = CharacterSet.decimalDigits
+		return digits.isSuperset(of: CharacterSet(charactersIn: self)) && !isEmpty
 	}
 	
-//	var MD5: String {
-//		let data = (self as NSString).dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
-//		let result = NSMutableData(length: Int(CC_MD5_DIGEST_LENGTH)) ?? NSMutableData()
-//		let resultBytes = UnsafeMutablePointer<CUnsignedChar>(result.mutableBytes)
-//		CC_MD5(data.bytes, CC_LONG(data.length), resultBytes)
-//		
-//		let a = UnsafeBufferPointer<CUnsignedChar>(start: resultBytes, count: result.length)
-//		let hash = NSMutableString()
-//		
-//		for i in a {
-//			hash.appendFormat("%02x", i)
-//		}
-//		
-//		return hash as String
-//	}
-	
-	func containsString(string: String) -> Bool {
-		return self.rangeOfString(string) != nil
-	}
-	
-	func uiimage() -> UIImage? {
+	/// An `UIImage?` by calling `UIImage(named: self)`.
+	func uiImage() -> UIImage? {
 		return UIImage(named: self)
 	}
 	
-	func uifont(fontSize: CGFloat) -> UIFont? {
-		return UIFont(name: self, size: fontSize)
+	/// An `UIFont?` by calling `UIFont(named: self, size: fontSize)`.
+	func uiFont(size: CGFloat) -> UIFont? {
+		return UIFont(name: self, size: size)
 	}
 	
-	func uifont() -> UIFont? {
-		return uifont(UIFont.systemFontSize())
+	/// An `UIFint?` by calling `UIFont(named: self, size: UIFont.systemFontSize)`.
+	func uiFont() -> UIFont? {
+		return uiFont(size: UIFont.systemFontSize)
 	}
 	
-	func split(delimiter: String?) -> [AnyObject] {
+	/// Returns an array containing substrings from the `String` that have been divided by a given separator. If no separator is passed in, the string is split into characters.
+	func split(by delimiter: String? = nil) -> [String] {
 		if let separator = delimiter {
-			return self.componentsSeparatedByString(separator)
+			return components(separatedBy: separator)
 		}
 		else {
-			return self.componentsSeparatedByString("")
+			return characters.map { "\($0)" }
 		}
 	}
 	
+	/// Accesses the element at the specified position.
 	subscript(pos: Int) -> String {
 		return self[pos...pos]
 	}
 	
-	subscript(range: Range<Int>) -> String {
-		let start = startIndex.advancedBy(range.startIndex)
-		let end = startIndex.advancedBy(range.endIndex)
+	/// Returns a substring at the specified range.
+	subscript(range: ClosedRange<Int>) -> String {
+		let start = characters.index(startIndex, offsetBy: range.lowerBound)
+		let end = characters.index(startIndex, offsetBy: range.upperBound + 1)
 		
-		return substringWithRange(Range(start: start, end: end))
-	}
-}
-
-func * (left: String, right: Int) -> String {
-	var newString = ""
-	right.times {
-		newString += left
+		return substring(with: (start..<end))
 	}
 	
-	return newString
+	/// Returns a substring at the specified range.
+	subscript(range: Range<Int>) -> String {
+		let start = characters.index(startIndex, offsetBy: range.lowerBound)
+		let end = characters.index(startIndex, offsetBy: range.upperBound)
+		
+		return substring(with: (start..<end))
+	}
 }
 
-func << (inout left: String, right: String) {
+/// Returns a string multiplied by the right operand of times.
+func *(left: String, right: Int) -> String {
+	return String(repeating: left, count: right)
+}
+
+/// Appens the right hand operand to the left one.
+func <<(left: inout String, right: String) {
 	left += right
 }
 
-func << (inout left: String, right: Character) {
+/// Appens the right hand operand to the left one.
+func <<(left: inout String, right: Character) {
 	left += String(right)
 }

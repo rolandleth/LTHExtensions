@@ -9,13 +9,8 @@
 import UIKit
 
 extension UIButton {
-	var custom: UIButton { return UIButton(type: .Custom) }
-	var system: UIButton { return UIButton(type: .System) }
-	var detailDisclosure: UIButton { return UIButton(type: .DetailDisclosure) }
-	var infoLight: UIButton { return UIButton(type: .InfoLight) }
-	var infoDark: UIButton { return UIButton(type: .InfoDark) }
-	var contactAdd: UIButton { return UIButton(type: .ContactAdd) }
 	
+	/// Aligns the image, if any exists, to the right of the title, with an inset of `7`, centering them both in the button.
 	func alignImageOnTheRightOfTitle() {
 		titleEdgeInsets = UIEdgeInsets(top: 0, left: -(imageView!.width + 7), bottom: 0, right: imageView!.width + 7)
 		imageEdgeInsets = UIEdgeInsets(
@@ -24,6 +19,7 @@ extension UIButton {
 		)
 	}
 	
+	/// Aligns the image, if any exists, to the left of the title, with an inset of `-11` and `7`, respectively.
 	func alignImageOnTheLeftOfTitle() {
 		titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -11)
 		imageEdgeInsets = UIEdgeInsets(top: 0, left: -7, bottom: 0, right: 0)

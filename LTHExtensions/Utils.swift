@@ -6,249 +6,103 @@
 //  Copyright (c) 2014 Roland Leth. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-enum LTHViewTag: Int {
-	case CartViewCartButton = 9988
-}
-
 struct Utils {
-	static func rotateViewAccordingToOrientation(view: UIView, animated: Bool) {
-		if Utils.iOS8 {
-			return
-		}
-		
-		if !animated {
-			let t = view.transform
-			if Utils.landscapeLeft {
-				view.transform = CGAffineTransformRotate(t, CGFloat(-M_PI/2))
-			}
-			else if Utils.landscapeRight {
-				view.transform = CGAffineTransformRotate(t, CGFloat(M_PI/2))
-			}
-			else if Utils.portraitUpsideDown {
-				view.transform = CGAffineTransformRotate(t, CGFloat(M_PI))
-			}
-			else {
-				view.transform = CGAffineTransformRotate(t, 0)
-			}
-			
-			return
-		}
-		
-		UIView.animateWithDuration(0.35, animations: { () -> Void in
-			if Utils.landscapeLeft {
-				view.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI/2))
-			}
-			else if Utils.landscapeRight {
-				view.transform = CGAffineTransformMakeRotation(CGFloat(M_PI/2))
-			}
-			else if Utils.portraitUpsideDown {
-				view.transform = CGAffineTransformMakeRotation(CGFloat(M_PI))
-			}
-			else {
-				view.transform = CGAffineTransformMakeRotation(0)
-			}
-		})
-	}
 	
+	/// A `Boolean` flag which indicates if the device is an iPhone 6+, by comparing the screen's height with `736`. If an iPhone 6+ user uses the "Zoomed" mode, the screen height will be `667`, the equivalent of an iPhone 6.
+	static var iPhone6Plus: Bool { return UIScreen.main.bounds.size.height == 736 }
+	
+	/// A `Boolean` flag which indicates if the device is an iPhone 6, by comparing the screen's height with `667`. If an iPhone 6 user uses the "Zoomed" mode, the screen height will be `568`, the equivalent of an iPhone 5. If an iPhone 6+ user uses the "Zoomed" mode, the screen height will be `667`.
+	static var iPhone6: Bool { return UIScreen.main.bounds.size.height == 667 }
+	
+	/// A `Boolean` flag which indicates if the device is an iPhone 5, by comparing the screen's height with `568`.
+	static var iPhone5: Bool { return UIScreen.main.bounds.size.height == 568 }
+	
+	/// A `Boolean` flag which indicates if the device is an iPhone 4, by comparing the screen's height with `480`.
+	static var iPhone4: Bool { return UIScreen.main.bounds.size.height == 480 }
+	
+	/// A `Boolean` flag which indicates if the device is an iPad, by comparing the device's `userInterfaceIdiom` with `.pad`.
+	static var iPad = UIDevice.current.userInterfaceIdiom == .pad
+	
+	/// The orientation of the device, read from `UIApplication.shared.statusBarOrientation`.
 	static var orientation: UIInterfaceOrientation {
-		return UIApplication.sharedApplication().statusBarOrientation
+		return UIApplication.shared.statusBarOrientation
 	}
 	
+	/// A `Boolean` value which indicates if the device is in landscape by comparing `UIApplication.shared.statusBarOrientation` with `.landscapeLeft` and `.landscapeRight`.
 	static var landscape: Bool {
-		return UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.LandscapeLeft || UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.LandscapeRight
+		return UIApplication.shared.statusBarOrientation == UIInterfaceOrientation.landscapeLeft || UIApplication.shared.statusBarOrientation == UIInterfaceOrientation.landscapeRight
 	}
 	
+	/// A `Boolean` value which indicates if the device is in landscape (left oriented) by comparing `UIApplication.shared.statusBarOrientation` with `.landscapeLeft`.
 	static var landscapeLeft: Bool {
-		return UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.LandscapeLeft
+		return UIApplication.shared.statusBarOrientation == UIInterfaceOrientation.landscapeLeft
 	}
 	
+	/// A `Boolean` value which indicates if the device is in landscape (right oriented) by comparing `UIApplication.shared.statusBarOrientation` with `.landscapeRight`.
 	static var landscapeRight: Bool {
-		return UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.LandscapeRight
+		return UIApplication.shared.statusBarOrientation == UIInterfaceOrientation.landscapeRight
 	}
 	
+	/// A `Boolean` value which indicates if the device is in landscape by comparing `UIApplication.shared.statusBarOrientation` with `.landscapeLeft` and `.landscapeRight`.
 	static var portrait: Bool {
-		return UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.Portrait ||
-			UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.PortraitUpsideDown
+		return !landscape
 	}
 	
-	static var portraitUpsideDown: Bool {
-		return UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.PortraitUpsideDown
-	}
-	
+	/// The height of the status bar, read from `UIApplication.shared.statusBarFrame.height`.
 	static var statusBarHeight: CGFloat {
-		if landscape && !iOS8 {
-			return UIApplication.sharedApplication().statusBarFrame.width
-		}
-		
-		return UIApplication.sharedApplication().statusBarFrame.height
+		return UIApplication.shared.statusBarFrame.height
 	}
 	
+	/// The height of the screen, read from `UIScreen.main.bounds.height`.
 	static var winHeight: CGFloat {
-		if landscape && !iOS8 {
-			return UIScreen.mainScreen().bounds.width
-		}
-		return UIScreen.mainScreen().bounds.height
+		return UIScreen.main.bounds.height
 	}
 	
+	/// The width of the screen, read from `UIScreen.main.bounds.width`.
 	static var winWidth: CGFloat {
-		if landscape && !iOS8 {
-			return UIScreen.mainScreen().bounds.height
-		}
-		return UIScreen.mainScreen().bounds.width
+		return UIScreen.main.bounds.width
 	}
 	
-	static var iPhone6Plus: Bool {
-		return UIScreen.mainScreen().bounds.size.height == 736.0 // @3x = 2208
-	}
-	
-	static var iPhone6: Bool {
-		return UIScreen.mainScreen().bounds.size.height == 667.0 // @2x = 1334
-	}
-	
-	static var iPhone5: Bool {
-		return UIScreen.mainScreen().bounds.size.height == 568.0 // @2x = 1136
-	}
-	
-	static var iPhone4: Bool {
-		return UIScreen.mainScreen().bounds.size.height < 568.0
-	}
-	
-	static var iPad: Bool {
-		return UIDevice.currentDevice().userInterfaceIdiom == .Pad
-	}
-	
-	static var iOS8: Bool {
-		return UIDevice.currentDevice().systemVersion.floatValue >= 8.0
-	}
-	
+	/// A `CGPoint` found at `UIScreen.main.bounds.width * 0.5` and `UIScreen.main.bounds.height * 0.5`.
 	static var screenCenter: CGPoint {
-		return CGPointMake(UIScreen.mainScreen().bounds.width * 0.5, UIScreen.mainScreen().bounds.height * 0.5)
+		return CGPoint(x: UIScreen.main.bounds.width * 0.5, y: UIScreen.main.bounds.height * 0.5)
 	}
 	
-	static func dispatch_low(closure: () -> ()) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)) {
-			closure()
-		}
-	}
-	
-	static func dispatch_default(closure: () -> ()) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-			closure()
-		}
-	}
-	
-	static func dispatch_high(closure: () -> ()) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) {
-			closure()
-		}
-	}
-	
-	static func dispatch_background(closure: () -> ()) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-			closure()
-		}
-	}
-	
-	static func dispatch_main(closure: () -> ()) {
-		dispatch_async(dispatch_get_main_queue()) {
-			closure()
-		}
-	}
-	
-	static func delay(delay: Double, closure: () -> ()) {
-		dispatch_after(
-			dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC))),
-			dispatch_get_main_queue(),
-			closure
-		)
-	}
-	
-	/// Because creating a number formatter eats a lot of resources.
-	static var numberFormatter: NSNumberFormatter {
-		let formatter: NSNumberFormatter = NSNumberFormatter()
-		
-		// Reset every time and set the required properties outside
-		formatter.locale = NSLocale.currentLocale()
-		formatter.maximumFractionDigits = 2
-		formatter.minimumFractionDigits = 0
-		formatter.alwaysShowsDecimalSeparator = false
-		formatter.numberStyle = .NoStyle
-		
-		return formatter
-	}
-	
-	/// Because creating a date formatter eats a lot of resources.
-	static var dateFormatter: NSDateFormatter {
+	/// A static number formatter, because creating one uses a lot of resources. Accessing it sets these properties: `locale = .current`, `minimumFractionDigits = 0`, `maximumFractionDigits = 2`, `numberStyle = .none` and `alwaysShowsDecimalSeparator = false`.
+	static var numberFormatter: NumberFormatter {
 		struct Static {
-			static let formatter : NSDateFormatter = NSDateFormatter()
+			static let formatter: NumberFormatter = NumberFormatter()
 		}
 		
-		// Reset every time and set the required properties outside
-		Static.formatter.locale = NSLocale.currentLocale()
-		Static.formatter.dateFormat = nil
+		// Reset on every access.
+		Static.formatter.locale = Locale.current
+		Static.formatter.maximumFractionDigits = 2
+		Static.formatter.minimumFractionDigits = 0
+		Static.formatter.alwaysShowsDecimalSeparator = false
+		Static.formatter.numberStyle = .none
 		
 		return Static.formatter
 	}
 	
-	static func tryToOpenURL(url: NSURL) {
-		if UIApplication.sharedApplication().canOpenURL(url) {
-			UIApplication.sharedApplication().openURL(url)
+	/// A static date formatter, because creating one uses a lot of resources. Accessing it sets these properties: `locale = .current`, `dateFormat = nil`.
+	static var dateFormatter: DateFormatter {
+		struct Static {
+			static let formatter: DateFormatter = DateFormatter()
 		}
-	}
-	
-	// MARK:- View helpers
-	static func reloadCollectionViewAnimated(collectionView: UICollectionView, duration: NSTimeInterval = 0.15) {
-		transitionWith(collectionView,
-			duration: duration,
-			closure: { () -> Void in
-				collectionView.reloadData()
-			}, completion: nil)
-	}
-	
-	static func reloadTableViewAnimated(tableView: UITableView, duration: NSTimeInterval = 0.15) {
-		transitionWith(tableView,
-			duration: duration,
-			closure: { () -> Void in
-				tableView.reloadData()
-			}, completion: nil)
-	}
-	
-	static func transitionWith(view: UIView, duration: NSTimeInterval, options: UIViewAnimationOptions = .TransitionCrossDissolve, closure: () -> Void) {
-		transitionWith(view, duration: duration, options: options, closure: closure, completion: nil)
-	}
-	
-	static func transitionWith(view: UIView, duration: NSTimeInterval, options: UIViewAnimationOptions = .TransitionCrossDissolve, closure: () -> Void, completion: ((Bool) -> Void)? = nil) {
-		Utils.dispatch_main {
-			UIView.transitionWithView(view,
-				duration: duration,
-				options: options,
-				animations: { () -> Void in
-					closure()
-				}, completion: completion)
-		}
-	}
-	
-	static func centerView(view1: UIView, andView view2: UIView, inWidth width: CGFloat, withPadding padding: CGFloat) {
-		view1.center = CGPoint(x: width * 0.5 - view2.width * 0.5 - padding * 0.5, y: view1.center.y)
-		view2.x = view1.x + view1.width + padding
-	}
-	
-	static func centerView(view: UIView, inWidth width: CGFloat) {
-		view.center = CGPoint(x: width * 0.5, y: view.center.y)
+		
+		// Reset on every access.
+		Static.formatter.locale = Locale.current
+		Static.formatter.dateFormat = nil
+		
+		return Static.formatter
 	}
 }
 
-//public extension NSString {
-//	var MD5: NSString {
-//		return (self as String).MD5
-//	}
-//}
-
+/// Prints the function that called the current function. 
 public func printCallingFunction() {
-	let syms = NSThread.callStackSymbols()
+	let syms = Thread.callStackSymbols
 	
 	if !syms.isEmpty {
 		print("\(syms[2])")
@@ -258,30 +112,25 @@ public func printCallingFunction() {
 	// 2 is the caller
 }
 
-func psl <T>(toPrint: T) {
-	print(toPrint, terminator: "")
-}
 
-func p <T>(toPrint: T) {
-	print(toPrint)
-}
+/**
+Replacement for `print`, with extra info.
 
+- parameter object:   The object to be printed.
+- parameter function: The function where the call happens.
+- parameter file:     The class where the call happens.
+- parameter line:     The line where the call happens.
+*/
 func nslog<T>(
-	object: T,
-	_ function: String = __FUNCTION__,
-	_ file: String = __FILE__,
-	_ line: UInt = __LINE__) {
-		#if DEBUG
-			let filename = NSURL(string: file)?.lastPathComponent?.stringByReplacingOccurrencesOfString(".swift", withString: "") ?? ""
-			print("-- \(object) - [\(line)] \(filename).\(function)")
-		#endif
-}
-
-public func logAndAssert(@autoclosure condition: () -> Bool, message: String = "",
-	file: StaticString = __FILE__, line: UInt = __LINE__) {
+	_ object: T,
+	_ function: String = #function,
+	_ file: String = #file,
+	_ line: UInt = #line) {
+	#if DEBUG
+		let filename = NSURL(string: file)!.lastPathComponent!
+			.replacingOccurrences(of: ".swift", with: "")
 		
-		nslog(message)
-		assert(condition, message, file: file, line: line)
+		print("-- \(filename).\(function) [\(line)] - \(object)")
+	#endif
 }
 
-let UserDefaults = NSUserDefaults.standardUserDefaults()
